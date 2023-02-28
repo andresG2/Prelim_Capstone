@@ -1,8 +1,6 @@
-# Prelim_Capstone
-Instrusion detection with ML/AI
-
-
 ### Capstone 
+
+Intrusion Detection on a host computer with ML/AI detection
 
 Author: Andres Garcia
 
@@ -45,10 +43,37 @@ work out the bugs and configuration settings.
 
 #### Outline of project
 
-Several notebooks were used and tested. But, only two will be posted. Some were taken from tutorials and worked out.
+
+This project has four major parts :
+
+    model.py - This contains code fot our Machine Learning model to predict cybersecurity issue.
+    app.py - This contains Flask APIs that receives employee details through GUI or API calls, used the pickle model, and predicts the 
+		probability of an attack with root login failures.
+    index.html- This folder contains the HTML file to allow user to enter the number of times of failed root logins.
+
+    myModel.pkl - The optimized model. This had issues when being created due to software module versions in conflict with each other.
+    
+
+Running the project
+
+    Ensure that you are in the project home directory. Create the machine learning model by running below command from command prompt -
+
+			python model.py
+
+This would create a serialized version of our model into a file myModel.pkl
+
+    		Run app.py using below command to start Flask API
+
+			python app.py
+
+By default, flask will run on port 5000.
+
+    Navigate to URL http://127.0.0.1:5000/ (or) http://localhost:5000
 
 
 ##### Contact and Further Information
 
 andy.garcia.usa@gmail.com
+
+
 
