@@ -2,37 +2,34 @@ from sklearn import linear_model
 import pandas as pd
 import pickle
 import tensorflow as tf
+#import seaborn as sns
 
-#df = pd.read_csv('prices.csv')
-
-#y = df['Value'] # dependent variable
-#X = df[['Rooms', 'Distance']] # independent variable
-
-#lm = linear_model.LinearRegression()
-#lm.fit(X,y) #fitting the model
-#pickle.dump(lm, open('model.pkl','wb')) # SAVE THE MODEL AS PICKLE
-
-#print(lm.predict([[15,61]])) # format of input
-#print(f'score: {lm.score(X,y)}')
 
 # Create neural net
 import numpy as np # linear algebra
 import pandas as pd
 import io
-import requests
+import pip._vendor.requests
 import numpy as np
 import os
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
-from keras.models import Sequential
-from keras.layers import Dense, Activation
-from keras.callbacks import EarlyStopping
+#import tensorflow as tf
+#from tensorflow import keras
+#from tensorflow import layers
+#from tensorflow import Sequential
+#from tensorflow import Dense, Activation
+#from tensorflow import EarlyStopping
 import numpy as np # linear algebra
 import pandas as pd
-from keras.utils import get_file
+from tensorflow import get_file
+from keras.utils.data_utils import get_file
 from scipy.stats import zscore
+import matplotlib as mpl
 
-from symbol import tfpdef
+#from symbol import tfpdef
+
+from flask import Flask, request, render_template
 
 
 # LOAD THE DATA ############################################################
@@ -202,11 +199,16 @@ df.dropna(inplace=True,axis=1)
 ############################################################################################
 # Convert to numpy - Classification
 x_columns = df.columns.drop('outcome')
+x_columns = ['root_shell','num_access_files','num_failed_logins']
 x = df[x_columns].values
 dummies = pd.get_dummies(df['outcome']) # Classification
 outcomes = dummies.columns
 num_classes = len(outcomes)
 y = dummies.values
+
+#y.to_pickle('y.pkl')    #to save the dataframe, df to y.pkl
+
+#x.to_pickle('x.pkl')    #to save the dataframe, df to y.pkl
 
 
 # NEURAL NETWORK MACHINE LEARNING #############################################################
@@ -223,40 +225,83 @@ from keras.layers import Dense, Activation
 from keras.callbacks import EarlyStopping
 import joblib
 
+import seaborn as sns
+from sklearn.metrics import confusion_matrix,  accuracy_score
+import matplotlib.pyplot as plt
+
+
 # Split into train/test
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
 
 # Create neural net
-model = tf.keras.Sequential()
-model.add(Dense(10, input_dim=x.shape[1], kernel_initializer='normal', activation='relu'))
-model.add(Dense(20, input_dim=x.shape[1], kernel_initializer='normal', activation='relu'))
-model.add(Dense(10, input_dim=x.shape[1], kernel_initializer='normal', activation='relu'))
-model.add(Dense(1, kernel_initializer='normal'))
-model.add(Dense(y.shape[1],activation='softmax'))
-model.compile(loss='categorical_crossentropy', optimizer='adam')
-monitor = EarlyStopping(monitor='val_loss', min_delta=1e-3, patience=5, verbose=1, mode='auto')
-model.fit(X_train,y_train,validation_data=(X_test,y_test),callbacks=[monitor],verbose=2,epochs=19)
-model.save("model.h5")      
+#model = tf.keras.Sequential()
+#model.add(Dense(10, input_dim=x.shape[1], kernel_initializer='normal', activation='relu'))
+#model.add(Dense(20, input_dim=x.shape[1], kernel_initializer='normal', activation='relu'))
+#model.add(Dense(10, input_dim=x.shape[1], kernel_initializer='normal', activation='relu'))
+#model.add(Dense(1, kernel_initializer='normal'))
+#model.add(Dense(y.shape[1],activation='softmax'))
+#model.compile(loss='categorical_crossentropy', optimizer='adam')
+#monitor = EarlyStopping(monitor='val_loss', min_delta=1e-3, patience=5, verbose=1, mode='auto')
+#model.fit(X_train,y_train,validation_data=(X_test,y_test),callbacks=[monitor],verbose=2,epochs=19)
+#model.save("model.h5")      
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import FeatureUnion, make_pipeline, Pipeline
+from sklearn.tree import DecisionTreeClassifier
+from torchvision import transforms
+from sklearn.impute import SimpleImputer, MissingIndicator
+import streamlit as st
 
 
+transformer = FeatureUnion(
+    transformer_list=[
+        ('features', SimpleImputer(strategy='mean')),('indicators', MissingIndicator())])
+
+clf = make_pipeline(transformer, RandomForestClassifier(n_estimators=150, random_state=42, n_jobs=-1))
+clf = clf.fit(X_train, y_train)
+#results = clf.predict(X_test)
+#score = clf.score(X_test, y_test)
+#print("Shape:    ", results.shape)
+#print("Score:   ", score)
 
 # Measure accuracy
 # This works
-pred = model.predict(X_test)
-pred = np.argmax(pred,axis=1)
-y_eval = np.argmax(y_test,axis=1)
-score = metrics.accuracy_score(y_eval, pred)
-print("Validation score: {}".format(score))
+#pred = clf.predict(X_test)
+#pred = np.argmax(pred,axis=1)
+#y_eval = np.argmax(y_test,axis=1)
+#score = metrics.accuracy_score(y_eval, pred)
+#print("Validation score: {}".format(score))
 
 
 # Pickel time save and load
-pickle.dump(model, open('coreModel.pkl', 'wb'))
-pickled_model = pickle.load(open('coreModel.pkl', 'rb'))
-pred2 = pickled_model.predict(X_test)
-pred2 = np.argmax(pred2,axis=1)
-y_eval = np.argmax(y_test,axis=1)
-score = metrics.accuracy_score(y_eval, pred2)
-print("Validation score uing saved pickle model: {}".format(score))
+pickle.dump(clf, open('myModel.pkl', 'wb'))
+
+# Loading model to compare the results
+#pickled_model = pickle.load(open('myModel.pkl', 'rb'))
+#pred2 = pickled_model.predict(X_test)
+#pred2 = np.argmax(pred2,axis=1)
+#y_eval = np.argmax(y_test,axis=1)
+#cf_matrix = confusion_matrix(y_eval, pred2)
+#score = metrics.accuracy_score(y_eval, pred2)
+#print("Accuracy:", score)
+
+
+#def result():
+#    if request.method == 'POST':    
+#        return render_template("index.html", prediction = score)
+
+
+#print(cf_matrix)
+#sns.heatmap(cf_matrix, annot=True)
+
+#sns.heatmap(cf_matrix/np.sum(cf_matrix), annot=True,  fmt='.2%', cmap='Reds')
+# labels = ['True Neg','False Pos','False Neg','True Pos']
+# labels = np.asarray(labels).reshape(2,2)
+# sns.heatmap(cf_matrix, annot=labels, fmt='', cmap='Blues')
+
+
+    
+
 
 #filename = 'finalized_model.sav' # for joblib
 #save_path = './model.'
