@@ -10,7 +10,7 @@ Author: Andres Garcia
 Why should anyone care about this question?
 
 The ML/AI instrusion detection system is needed to detect malicious attacks, un-intended installations, remote access to IP information, etc. 
-The ML/AI system can have several algorithms suited for different scenarios, but needs to be fast and cable 
+The ML/AI system can have several algorithms suited for different scenarios, but needs to be fast and efficient. 
 
 #### Research Question
 The question right now is what process and algorithms will be used. Several classifactions were used, but some failed to run due to GPU requirements
