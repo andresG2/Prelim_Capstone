@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<style>
+
+
+
+form {
+    margin: auto;
+    width: 35%;
+}.result {
+    margin: auto;
+    width: 35%;
+    border: 1px solid #ccc;
+}
+</style>
+
+<head>
+  <title>Cybersecurity Model for Intrusion Detection</title>
+</head>
+
+<body>
+ <div class="login">
+  <h2>Cybersecurity Attack Prediction</h2>
+    <p>Introduce the number of admin log attempts and number of attempts to log into PC:</p>
+     <!-- Inputs for our ML model -->
+      <form action="{{ url_for('main')}}" method="POST">
+        <fieldset>
+          <legend>Input values:</legend>
+          <br>Number Failed Root Shell runs:
+          <input type="number" name="root_shell"   placeholder="root_shell" required="required"/><br>
+          <br>
+          <!-- <input type="submit"> -->
+          <button type="submit" class="btn btn-primary btn-block btn-large"> Predict Value! </button>
+      </fieldset>
+        <!--<input type="text" name="num_failed_logins" placeholder="num_failed_logins" required="required" />
+        <input type="text" name="su_attempted" placeholder="su_attempted" required="required"/> -->
+      </form>
+      <br>  
+      <br>      
+    
+      {{result}}
+ </div>
+</body>
+
+</html>
